@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hapvida Cotação - Pro</title>
+    <link rel="icon" type="image/png" href="icone-192.png">
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --glass: rgba(255,255,255,0.52);
+            --glass-border: rgba(255,255,255,0.78);
+            --glass-shadow: rgba(50,130,200,0.18);
+            --text-dark: #1a4a6e;
+            --text-mid: #2d6a9f;
+            --text-light: #62a0c8;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(160deg, #74d7ff 0%, #2e9fd8 40%, #1a7bbf 100%);
+            background-attachment: fixed;
+            padding: 36px 16px 56px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            width: 600px; height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(180,235,255,0.45) 0%, transparent 70%);
+            top: -150px; left: -150px;
+            pointer-events: none; z-index: 0;
+            animation: blob1 14s ease-in-out infinite alternate;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            width: 450px; height: 450px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            bottom: -100px; right: -80px;
+            pointer-events: none; z-index: 0;
+            animation: blob2 17s ease-in-out infinite alternate;
+        }
+        @keyframes blob1 { to { transform: translate(70px, 50px) scale(1.2); } }
+        @keyframes blob2 { to { transform: translate(-60px, -40px) scale(1.15); } }
+
+        .page-wrap {
+            position: relative; z-index: 1;
+            width: 100%; max-width: 1080px;
+        }
+
+        /* HEADER */
+        .site-header { text-align: center; margin-bottom: 30px; }
+        .site-header h1 {
+            font-size: 2rem; font-weight: 900;
+            color: white;
+            text-shadow: 0 2px 16px rgba(20,80,150,0.4);
+            letter-spacing: -0.5px;
+        }
+        .site-header p {
+            margin-top: 6px; font-size: 1rem; font-weight: 600;
+            color: rgba(255,255,255,0.85);
+        }
+
+        /* GLASS CARD */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px) saturate(1.5);
+            -webkit-backdrop-filter: blur(20px) saturate(1.5);
+            border: 1.5px solid var(--glass-border);
+            border-radius: 22px;
+            box-shadow:
+                0 8px 36px var(--glass-shadow),
+                0 1.5px 0 rgba(255,255,255,0.75) inset,
+                0 -1px 0 rgba(100,180,230,0.15) inset;
+        }
+
+        /* LAYOUT */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+        @media (max-width: 780px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            .site-header h1 { font-size: 1.5rem; }
+        }
+
+        /* SECTION HEADER */
+        .card-header {
+            display: flex; align-items: center; gap: 8px;
+            padding: 15px 20px;
+            border-bottom: 1.5px solid rgba(255,255,255,0.65);
+            font-size: 0.72rem; font-weight: 800;
+            letter-spacing: 1.2px; text-transform: uppercase;
+            color: var(--text-mid);
+        }
+        .card-header .pip {
+            width: 9px; height: 9px; border-radius: 50%;
+            background: linear-gradient(135deg, #3a8fd4, #1a5fa8);
+            box-shadow: 0 0 8px rgba(58,143,212,0.7);
+            flex-shrink: 0;
+        }
+        .pip-green {
+            background: linear-gradient(135deg, #5dd45d, #3db33d) !important;
+            box-shadow: 0 0 8px rgba(93,212,93,0.7) !important;
+        }
+
+        /* FORM */
+        .form-body { padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+
+        .field-label {
+            display: block; font-size: 0.88rem; font-weight: 800;
+            color: var(--text-dark); margin-bottom: 9px;
+        }
+
+        /* Radio pills */
+        .radio-group { display: flex; flex-wrap: wrap; gap: 8px; }
+        .radio-pill { flex: 1; min-width: 95px; }
+        .radio-pill input[type=radio] { display: none; }
+        .radio-pill label {
+            display: flex; align-items: center; justify-content: center;
+            padding: 9px 10px; border-radius: 50px;
+            border: 2px solid rgba(255,255,255,0.75);
+            background: rgba(255,255,255,0.38);
+            cursor: pointer; font-size: 0.83rem; font-weight: 700;
+            color: var(--text-mid); transition: all 0.2s; text-align: center;
+        }
+        .radio-pill input:checked + label {
+            background: linear-gradient(135deg, #3a8fd4, #1a5fa8);
+            border-color: rgba(26,95,168,0.8); color: white;
+            box-shadow: 0 4px 16px rgba(26,95,168,0.45);
+        }
+        .radio-pill label:hover { background: rgba(255,255,255,0.62); }
+
+        /* Text inputs */
+        .text-input {
+            width: 100%; padding: 11px 14px;
+            border-radius: 13px;
+            border: 2px solid rgba(255,255,255,0.75);
+            background: rgba(255,255,255,0.5);
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.95rem; font-weight: 700; color: var(--text-dark);
+            outline: none; transition: border 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+        .text-input::placeholder { color: var(--text-light); font-weight: 600; }
+        .text-input:focus {
+            border-color: rgba(58,143,212,0.9);
+            box-shadow: 0 0 0 3px rgba(58,143,212,0.2);
+            background: rgba(255,255,255,0.72);
+        }
+        select.text-input { appearance: none; cursor: pointer; }
+
+        .grid-2-sm { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        /* Checkboxes */
+        .check-group { display: flex; flex-wrap: wrap; gap: 9px; }
+        .check-pill input[type=checkbox] { display: none; }
+        .check-pill label {
+            display: flex; align-items: center; gap: 7px;
+            padding: 8px 15px; border-radius: 50px;
+            border: 2px solid rgba(255,255,255,0.75);
+            background: rgba(255,255,255,0.38);
+            cursor: pointer; font-size: 0.83rem; font-weight: 700;
+            color: var(--text-mid); transition: all 0.2s; user-select: none;
+        }
+        .check-pill input:checked + label {
+            background: linear-gradient(135deg, #5dd45d, #3db33d);
+            border-color: rgba(61,179,61,0.8); color: white;
+            box-shadow: 0 4px 14px rgba(61,179,61,0.38);
+        }
+        .check-pill label:hover { background: rgba(255,255,255,0.62); }
+        .chk-icon { font-size: 13px; }
+
+        /* Generate button */
+        .btn-main {
+            width: 100%; padding: 13px 20px;
+            border-radius: 50px; border: none;
+            background: linear-gradient(135deg, #3a8fd4 0%, #1a5fa8 100%);
+            color: white; font-family: 'Nunito', sans-serif;
+            font-size: 1rem; font-weight: 800; cursor: pointer;
+            letter-spacing: 0.6px; text-transform: uppercase;
+            box-shadow: 0 6px 22px rgba(26,95,168,0.5), 0 1px 0 rgba(255,255,255,0.3) inset;
+            transition: all 0.22s;
+        }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(26,95,168,0.6); }
+        .btn-main:active { transform: translateY(0); }
+
+        /* RESULT card header */
+        .result-header {
+            display: flex; flex-wrap: wrap; align-items: center;
+            justify-content: space-between; gap: 10px;
+            padding: 13px 18px;
+            border-bottom: 1.5px solid rgba(255,255,255,0.65);
+        }
+        .btn-row { display: flex; gap: 7px; flex-wrap: wrap; }
+
+        .btn-sm {
+            display: flex; align-items: center; gap: 5px;
+            padding: 8px 15px; border-radius: 50px; border: none;
+            font-family: 'Nunito', sans-serif; font-size: 0.8rem; font-weight: 800;
+            cursor: pointer; letter-spacing: 0.3px; text-transform: uppercase;
+            transition: all 0.2s;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+        }
+        .btn-sm:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,0.22); }
+        .btn-copy { background: linear-gradient(135deg, #5dd45d, #3db33d); color: white; }
+        .btn-pdf  { background: linear-gradient(135deg, #e05555, #c03838); color: white; }
+        .btn-wa   { background: linear-gradient(135deg, #25D366, #1aaa52); color: white; }
+
+        textarea#resultadoArea {
+            width: 100%; height: 450px;
+            background: transparent; border: none; outline: none; resize: none;
+            font-family: 'Nunito', monospace;
+            font-size: 0.92rem; font-weight: 600;
+            color: var(--text-dark); line-height: 1.7;
+            padding: 18px 22px;
+        }
+        textarea#resultadoArea::placeholder { color: var(--text-light); }
+
+        /* PDF MODAL */
+        @media print {
+            body * { visibility: hidden; }
+            #printArea, #printArea * { visibility: visible; }
+            #printArea { position: fixed; top: 0; left: 0; width: 100%; background: white; }
+        }
+
+        #pdfModal {
+            display: none; position: fixed; inset: 0;
+            background: rgba(10,50,100,0.55);
+            backdrop-filter: blur(5px);
+            z-index: 1000; align-items: center; justify-content: center;
+        }
+        #pdfModal.open { display: flex; }
+        #pdfModalContent {
+            background: white; border-radius: 20px;
+            width: 92%; max-width: 640px; max-height: 92vh;
+            overflow-y: auto;
+            box-shadow: 0 24px 70px rgba(10,50,120,0.45);
+            display: flex; flex-direction: column;
+        }
+        .modal-top {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 15px 20px; border-bottom: 1px solid #e5e7eb;
+            background: #f9fafb; border-radius: 20px 20px 0 0;
+            position: sticky; top: 0;
+        }
+        .modal-title { font-size: 0.78rem; font-weight: 800; color: #374151; text-transform: uppercase; letter-spacing: 0.8px; }
+        .modal-btns { display: flex; gap: 8px; }
+        .mbtn {
+            border: none; border-radius: 50px; padding: 8px 16px;
+            font-family: 'Nunito', sans-serif; font-size: 0.78rem; font-weight: 800;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .mbtn-save { background: linear-gradient(135deg, #e05555, #c03838); color: white; box-shadow: 0 3px 12px rgba(192,56,56,0.35); }
+        .mbtn-close { background: #e5e7eb; color: #374151; }
+        #printArea { padding: 28px; }
+    </style>
+</head>
+<body>
+<div class="page-wrap">
+
+    <div class="site-header">
+        <h1>🏥 Hapvida — Individual · SUPER SIMPLES · SISPEAM</h1>
+        <p>desenvolvido por narry :D</p>
+    </div>
+
+    <div class="grid-2">
+
+        <!-- FORM -->
+        <div class="glass-card">
+            <div class="card-header">
+                <span class="pip"></span>
+                Configurar Cotação
+            </div>
+            <div class="form-body">
+
+                <div>
+                    <span class="field-label">Tipo de Contrato</span>
+                    <div class="radio-group">
+                        <div class="radio-pill">
+                            <input type="radio" name="tipoContrato" id="r1" value="INDIVIDUAL" checked onchange="atualizarPlanos()">
+                            <label for="r1">Individual</label>
+                        </div>
+                        <div class="radio-pill">
+                            <input type="radio" name="tipoContrato" id="r2" value="SUPER SIMPLES" onchange="atualizarPlanos()">
+                            <label for="r2">Super Simples</label>
+                        </div>
+                        <div class="radio-pill">
+                            <input type="radio" name="tipoContrato" id="r3" value="SISPEAM MANAUS" onchange="atualizarPlanos()">
+                            <label for="r3">SISPEAM Manaus</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="field-label" for="idadesInput">Idades (separadas por vírgula)</label>
+                    <input type="text" id="idadesInput" class="text-input" placeholder="Ex: 5, 28, 42, 60">
+                </div>
+
+                <div class="grid-2-sm">
+                    <div>
+                        <label class="field-label" for="nomePlano">Linha do Plano</label>
+                        <select id="nomePlano" class="text-input"></select>
+                    </div>
+                    <div>
+                        <label class="field-label" for="copart">Coparticipação</label>
+                        <select id="copart" class="text-input">
+                            <option value="PARCIAL">Parcial</option>
+                            <option value="TOTAL">Total</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <span class="field-label">Acomodações</span>
+                    <div class="check-group">
+                        <div class="check-pill">
+                            <input type="checkbox" id="checkAmb" checked>
+                            <label for="checkAmb"><span class="chk-icon">🏃</span> Ambulatorial</label>
+                        </div>
+                        <div class="check-pill">
+                            <input type="checkbox" id="checkEnf" checked>
+                            <label for="checkEnf"><span class="chk-icon">🛏️</span> Enfermaria</label>
+                        </div>
+                        <div class="check-pill">
+                            <input type="checkbox" id="checkApt">
+                            <label for="checkApt"><span class="chk-icon">🌟</span> Apartamento</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-main" onclick="gerarOrcamento()">✨ Gerar Orçamento</button>
+            </div>
+        </div>
+
+        <!-- RESULT -->
+        <div class="glass-card" style="display:flex;flex-direction:column;">
+            <div class="result-header">
+                <div class="card-header" style="padding:0;border:none;">
+                    <span class="pip pip-green"></span>
+                    Resultado
+                </div>
+                <div class="btn-row">
+                    <button class="btn-sm btn-copy" id="btnCopiar" onclick="copiarTexto()">📋 Copiar</button>
+                    <button class="btn-sm btn-pdf" onclick="abrirPdf()">📄 PDF</button>
+                    <button class="btn-sm btn-wa" onclick="compartilharWhatsApp()">💬 WhatsApp</button>
+                </div>
+            </div>
+            <textarea id="resultadoArea" readonly placeholder="Configure e clique em Gerar Orçamento para ver o resultado aqui..."></textarea>
+        </div>
+
+    </div>
+</div>
+
+<!-- PDF MODAL -->
+<div id="pdfModal">
+    <div id="pdfModalContent">
+        <div class="modal-top">
+            <span class="modal-title">📄 Pré-visualização da Cotação</span>
+            <div class="modal-btns">
+                <button class="mbtn mbtn-save" onclick="imprimirPdf()">📥 Salvar PDF</button>
+                <button class="mbtn mbtn-close" onclick="fecharModal()">✕ Fechar</button>
+            </div>
+        </div>
+        <div id="printArea"></div>
+    </div>
+</div>
+
+<script>
+const tabelaPrecos = {
+    "INDIVIDUAL": {
+        "NOSSO MÉDICO": {
+            "PARCIAL": { "0-18": { enf: 294.37, apt: 439.62 }, "19-23": { enf: 387.34, apt: 579.07 }, "24-28": { enf: 444.86, apt: 665.35 }, "29-33": { enf: 497.78, apt: 744.73 }, "34-38": { enf: 522.48, apt: 781.77 }, "39-43": { enf: 589.90, apt: 882.90 }, "44-48": { enf: 718.83, apt: 1076.29 }, "49-53": { enf: 990.52, apt: 1483.82 }, "54-58": { enf: 1335.85, apt: 2001.81 }, "59+": { enf: 1735.45, apt: 2601.20 } },
+            "TOTAL": { "0-18": { enf: 210.46, apt: 313.76 }, "19-23": { enf: 276.58, apt: 412.93 }, "24-28": { enf: 317.49, apt: 474.29 }, "29-33": { enf: 355.13, apt: 530.74 }, "34-38": { enf: 372.69, apt: 557.08 }, "39-43": { enf: 420.64, apt: 629.00 }, "44-48": { enf: 512.33, apt: 766.53 }, "49-53": { enf: 705.55, apt: 1056.35 }, "54-58": { enf: 951.15, apt: 1424.73 }, "59+": { enf: 1235.34, apt: 1850.99 } }
+        },
+        "NOSSO PLANO": {
+            "PARCIAL": { "0-18": { amb: 218.13, enf: 326.65, apt: 488.04 }, "19-23": { amb: 287.34, enf: 429.95, apt: 642.98 }, "24-28": { amb: 327.60, enf: 493.87, apt: 738.85 }, "29-33": { amb: 365.48, enf: 552.67, apt: 827.05 }, "34-38": { amb: 384.65, enf: 580.11, apt: 868.21 }, "39-43": { amb: 431.87, enf: 655.02, apt: 980.58 }, "44-48": { amb: 528.17, enf: 798.28, apt: 1195.46 }, "49-53": { amb: 732.65, enf: 1100.16, apt: 1648.27 }, "54-58": { amb: 987.73, enf: 1483.87, apt: 2223.82 }, "59+": { amb: 1282.89, enf: 1927.88, apt: 2889.81 } },
+            "TOTAL": { "0-18": { amb: 139.89, enf: 233.42, apt: 348.19 }, "19-23": { amb: 183.83, enf: 306.88, apt: 458.38 }, "24-28": { amb: 209.39, enf: 352.33, apt: 526.56 }, "29-33": { amb: 233.44, enf: 394.15, apt: 589.29 }, "34-38": { amb: 245.61, enf: 413.67, apt: 618.56 }, "39-43": { amb: 275.59, enf: 466.95, apt: 698.47 }, "44-48": { amb: 336.73, enf: 568.83, apt: 851.29 }, "49-53": { amb: 466.55, enf: 783.52, apt: 1173.32 }, "54-58": { amb: 628.50, enf: 1056.40, apt: 1582.63 }, "59+": { amb: 815.90, enf: 1372.17, apt: 2056.26 } }
+        }
+    },
+    "SUPER SIMPLES": {
+        "NOSSO MÉDICO": {
+            "PARCIAL": { "0-18": { enf: 220.45, apt: 329.98 }, "19-23": { enf: 246.90, apt: 369.58 }, "24-28": { enf: 276.53, apt: 413.93 }, "29-33": { enf: 318.01, apt: 476.02 }, "34-38": { enf: 365.71, apt: 547.42 }, "39-43": { enf: 435.19, apt: 651.43 }, "44-48": { enf: 543.99, apt: 814.29 }, "49-53": { enf: 679.99, apt: 1017.86 }, "54-58": { enf: 1155.98, apt: 1730.36 }, "59+": { enf: 1294.70, apt: 1938.00 } },
+            "TOTAL": { "0-18": { enf: 165.43, apt: 247.13 }, "19-23": { enf: 185.28, apt: 277.12 }, "24-28": { enf: 207.51, apt: 310.37 }, "29-33": { enf: 238.64, apt: 356.93 }, "34-38": { enf: 274.44, apt: 410.47 }, "39-43": { enf: 326.58, apt: 488.46 }, "44-48": { enf: 408.23, apt: 610.58 }, "49-53": { enf: 510.29, apt: 763.23 }, "54-58": { enf: 867.49, apt: 1297.49 }, "59+": { enf: 971.59, apt: 1453.19 } }
+        },
+        "NOSSO PLANO": {
+            "PARCIAL": { "0-18": { amb: 177.51, enf: 244.77, apt: 366.48 }, "19-23": { amb: 198.81, enf: 274.14, apt: 410.46 }, "24-28": { amb: 222.67, enf: 307.04, apt: 459.72 }, "29-33": { amb: 256.07, enf: 353.10, apt: 528.68 }, "34-38": { amb: 294.48, enf: 406.07, apt: 607.98 }, "39-43": { amb: 350.43, enf: 483.22, apt: 723.50 }, "44-48": { amb: 438.04, enf: 604.03, apt: 904.38 }, "49-53": { amb: 547.55, enf: 755.04, apt: 1130.48 }, "54-58": { amb: 930.84, enf: 1283.57, apt: 1921.82 }, "59+": { amb: 1042.54, enf: 1437.60, apt: 2152.44 } },
+            "TOTAL": { "0-18": { amb: 113.87, enf: 183.63, apt: 274.75 }, "19-23": { amb: 127.53, enf: 205.67, apt: 307.72 }, "24-28": { amb: 142.83, enf: 230.35, apt: 344.65 }, "29-33": { amb: 164.25, enf: 264.90, apt: 396.35 }, "34-38": { amb: 188.89, enf: 304.64, apt: 455.80 }, "39-43": { amb: 224.78, enf: 362.52, apt: 542.40 }, "44-48": { amb: 280.98, enf: 453.15, apt: 678.00 }, "49-53": { amb: 351.23, enf: 566.44, apt: 847.50 }, "54-58": { amb: 597.09, enf: 962.95, apt: 1440.75 }, "59+": { amb: 668.74, enf: 1078.50, apt: 1613.64 } }
+        }
+    },
+    "SISPEAM MANAUS": {
+        "AFFIX MANAUS": {
+            "PARCIAL": {
+                "0-18":  { amb: 170.78, amb15: 145.16, enf: 235.48, enf15: 200.16, apt: 352.48, apt15: 299.61 },
+                "19-23": { amb: 191.28, amb15: 162.59, enf: 263.73, enf15: 224.17, apt: 394.78, apt15: 335.56 },
+                "24-28": { amb: 214.24, amb15: 182.10, enf: 295.38, enf15: 251.07, apt: 442.15, apt15: 375.83 },
+                "29-33": { amb: 246.38, amb15: 209.42, enf: 339.69, enf15: 288.74, apt: 508.47, apt15: 432.20 },
+                "34-38": { amb: 283.33, amb15: 240.83, enf: 390.65, enf15: 332.05, apt: 584.74, apt15: 497.03 },
+                "39-43": { amb: 337.17, amb15: 286.59, enf: 464.87, enf15: 395.14, apt: 695.84, apt15: 591.46 },
+                "44-48": { amb: 421.47, amb15: 358.25, enf: 581.08, enf15: 493.92, apt: 869.79, apt15: 739.32 },
+                "49-53": { amb: 526.83, amb15: 447.81, enf: 726.36, enf15: 617.41, apt: 1087.25, apt15: 924.16 },
+                "54-58": { amb: 895.62, amb15: 761.28, enf: 1234.81, enf15: 1049.59, apt: 1848.32, apt15: 1571.07 },
+                "59+":   { amb: 1003.09, amb15: 852.63, enf: 1382.98, enf15: 1175.53, apt: 2070.12, apt15: 1759.60 }
+            },
+            "TOTAL": {
+                "0-18":  { amb: 109.59, amb15: 93.15,  enf: 176.69, enf15: 150.19, apt: 264.29, apt15: 224.65 },
+                "19-23": { amb: 122.75, amb15: 104.34, enf: 197.88, enf15: 168.20, apt: 296.00, apt15: 251.60 },
+                "24-28": { amb: 137.47, amb15: 116.85, enf: 221.63, enf15: 188.39, apt: 331.53, apt15: 281.80 },
+                "29-33": { amb: 158.09, amb15: 134.38, enf: 254.87, enf15: 216.64, apt: 381.25, apt15: 324.06 },
+                "34-38": { amb: 181.81, amb15: 154.54, enf: 293.11, enf15: 249.14, apt: 438.44, apt15: 372.67 },
+                "39-43": { amb: 216.35, amb15: 183.90, enf: 348.80, enf15: 296.48, apt: 521.75, apt15: 443.49 },
+                "44-48": { amb: 270.44, amb15: 229.87, enf: 436.00, enf15: 370.60, apt: 652.19, apt15: 554.36 },
+                "49-53": { amb: 338.05, amb15: 287.34, enf: 545.00, enf15: 463.25, apt: 815.23, apt15: 692.95 },
+                "54-58": { amb: 574.68, amb15: 488.48, enf: 926.51, enf15: 787.53, apt: 1385.90, apt15: 1178.02 },
+                "59+":   { amb: 643.64, amb15: 547.09, enf: 1037.68, enf15: 882.03, apt: 1552.20, apt15: 1319.37 }
+            }
+        }
+    }
+};
+
+const planosPorTipo = {
+    "INDIVIDUAL":     ["NOSSO PLANO", "NOSSO MÉDICO"],
+    "SUPER SIMPLES":  ["NOSSO PLANO", "NOSSO MÉDICO"],
+    "SISPEAM MANAUS": ["AFFIX MANAUS"]
+};
+
+function atualizarPlanos() {
+    const tipo = document.querySelector('input[name="tipoContrato"]:checked').value;
+    const sel = document.getElementById('nomePlano');
+    sel.innerHTML = '';
+    planosPorTipo[tipo].forEach(p => {
+        const o = document.createElement('option');
+        o.value = p; o.textContent = p;
+        sel.appendChild(o);
+    });
+}
+atualizarPlanos();
+
+function getFaixa(idade) {
+    idade = parseInt(idade);
+    if (idade <= 18) return { t: "00 a 18", k: "0-18" };
+    if (idade <= 23) return { t: "19 a 23", k: "19-23" };
+    if (idade <= 28) return { t: "24 a 28", k: "24-28" };
+    if (idade <= 33) return { t: "29 a 33", k: "29-33" };
+    if (idade <= 38) return { t: "34 a 38", k: "34-38" };
+    if (idade <= 43) return { t: "39 a 43", k: "39-43" };
+    if (idade <= 48) return { t: "44 a 48", k: "44-48" };
+    if (idade <= 53) return { t: "49 a 53", k: "49-53" };
+    if (idade <= 58) return { t: "54 a 58", k: "54-58" };
+    return { t: "59 ou +", k: "59+" };
+}
+
+const fmt = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+let ultimoResultado = {};
+
+function gerarOrcamento() {
+    const tipo   = document.querySelector('input[name="tipoContrato"]:checked').value;
+    const plano  = document.getElementById('nomePlano').value;
+    const copart = document.getElementById('copart').value;
+    const idades = document.getElementById('idadesInput').value
+                    .split(/[\s,]+/).map(i => i.trim()).filter(i => i !== "");
+    if (!idades.length) { alert("Insira as idades."); return; }
+
+    const querAmb = document.getElementById('checkAmb').checked;
+    const querEnf = document.getElementById('checkEnf').checked;
+    const querApt = document.getElementById('checkApt').checked;
+
+    let texto = `HAPVIDA - ${tipo}\nPLANO: ${plano} | COPART: ${copart}\n------------------------------------\n\n`;
+    let somaAmb = 0, somaEnf = 0, somaApt = 0;
+    const itens = [];
+
+    idades.forEach(idade => {
+        const info   = getFaixa(idade);
+        const precos = tabelaPrecos[tipo]?.[plano]?.[copart]?.[info.k];
+        if (!precos) { texto += `Beneficiário: ${idade} anos — dados não encontrados.\n\n`; return; }
+
+        texto += `Beneficiário: ${idade} anos (${info.t} anos)\n`;
+        const benefItem = { idade, faixa: info.t, linhas: [] };
+
+        const processar = (label, valorBase, key) => {
+            const vDesc = (tipo === "SISPEAM MANAUS" && precos[key+"15"] !== undefined)
+                ? precos[key+"15"] : valorBase * 0.85;
+            texto += `* ${label}: ${fmt(vDesc)} (durante 3 meses) -> \n`;
+            texto += `Após os 3 meses - ${fmt(valorBase)}\n`;
+            benefItem.linhas.push({ label, vDesc, valorBase });
+            return vDesc;
+        };
+
+        if (querAmb && precos.amb !== undefined) somaAmb += processar("Ambulatorial", precos.amb, "amb");
+        if (querEnf && precos.enf !== undefined) somaEnf += processar("Enfermaria",   precos.enf, "enf");
+        if (querApt && precos.apt !== undefined) somaApt += processar("Apartamento",  precos.apt, "apt");
+
+        itens.push(benefItem);
+        texto += '\n';
+    });
+
+    texto += `------------------------------------\nRESUMO DO GRUPO (${idades.length} vida${idades.length > 1 ? 's' : ''}):\n`;
+    if (querAmb && somaAmb > 0) texto += `TOTAL AMBULATORIAL: ${fmt(somaAmb)}\n`;
+    if (querEnf && somaEnf > 0) texto += `TOTAL ENFERMARIA: ${fmt(somaEnf)}\n`;
+    if (querApt && somaApt > 0) texto += `TOTAL APARTAMENTO: ${fmt(somaApt)}\n`;
+
+    document.getElementById('resultadoArea').value = texto.trim();
+    ultimoResultado = { texto: texto.trim(), tipo, plano, copart, idades, itens, somaAmb, somaEnf, somaApt, querAmb, querEnf, querApt };
+}
+
+function copiarTexto() {
+    const val = document.getElementById('resultadoArea').value;
+    if (!val) { alert("Gere o orçamento primeiro."); return; }
+    navigator.clipboard.writeText(val).then(() => {
+        const btn = document.getElementById('btnCopiar');
+        btn.textContent = '✅ Copiado!';
+        setTimeout(() => btn.textContent = '📋 Copiar', 2000);
+    });
+}
+
+function compartilharWhatsApp() {
+    const val = document.getElementById('resultadoArea').value;
+    if (!val) { alert("Gere o orçamento primeiro."); return; }
+    window.open(`https://wa.me/?text=${encodeURIComponent(val)}`, '_blank');
+}
+
+function abrirPdf() {
+    const val = document.getElementById('resultadoArea').value;
+    if (!val) { alert("Gere o orçamento primeiro."); return; }
+
+    const { tipo, plano, copart, idades, itens, somaAmb, somaEnf, somaApt, querAmb, querEnf, querApt } = ultimoResultado;
+    const hoje = new Date().toLocaleDateString('pt-BR');
+
+    const benefHTML = itens.map(b => {
+        const linhas = b.linhas.map(l => `
+            <tr>
+                <td style="padding:8px 12px;font-size:13px;color:#374151;border-bottom:1px solid #f0f4f8;">${l.label}</td>
+                <td style="padding:8px 12px;font-size:13px;text-align:right;color:#1d4ed8;font-weight:700;border-bottom:1px solid #f0f4f8;">
+                    ${fmt(l.vDesc)}<br><span style="font-size:10px;color:#6b7280;font-weight:400;">3 primeiros meses</span>
+                </td>
+                <td style="padding:8px 12px;font-size:13px;text-align:right;color:#374151;border-bottom:1px solid #f0f4f8;">
+                    ${fmt(l.valorBase)}<br><span style="font-size:10px;color:#6b7280;">após 3 meses</span>
+                </td>
+            </tr>`).join('');
+        return `
+            <div style="margin-bottom:16px;border:1px solid #dbeafe;border-radius:12px;overflow:hidden;">
+                <div style="background:#eff6ff;padding:10px 14px;border-bottom:1px solid #dbeafe;">
+                    <span style="font-size:13px;font-weight:700;color:#1e40af;">👤 ${b.idade} anos</span>
+                    <span style="font-size:12px;color:#6b7280;margin-left:6px;">(faixa ${b.faixa} anos)</span>
+                </div>
+                <table style="width:100%;border-collapse:collapse;background:white;">
+                    <thead><tr style="background:#f8fafc;">
+                        <th style="padding:6px 12px;font-size:10px;text-align:left;color:#6b7280;font-weight:700;text-transform:uppercase;">Cobertura</th>
+                        <th style="padding:6px 12px;font-size:10px;text-align:right;color:#6b7280;font-weight:700;text-transform:uppercase;">Com Desconto</th>
+                        <th style="padding:6px 12px;font-size:10px;text-align:right;color:#6b7280;font-weight:700;text-transform:uppercase;">Valor Normal</th>
+                    </tr></thead>
+                    <tbody>${linhas}</tbody>
+                </table>
+            </div>`;
+    }).join('');
+
+    let resumo = '';
+    if (querAmb && somaAmb > 0) resumo += `<tr><td style="padding:8px 12px;font-size:13px;color:#374151;">Total Ambulatorial</td><td style="padding:8px 12px;font-size:14px;font-weight:800;text-align:right;color:#1d4ed8;">${fmt(somaAmb)}</td></tr>`;
+    if (querEnf && somaEnf > 0) resumo += `<tr><td style="padding:8px 12px;font-size:13px;color:#374151;">Total Enfermaria</td><td style="padding:8px 12px;font-size:14px;font-weight:800;text-align:right;color:#1d4ed8;">${fmt(somaEnf)}</td></tr>`;
+    if (querApt && somaApt > 0) resumo += `<tr><td style="padding:8px 12px;font-size:13px;color:#374151;">Total Apartamento</td><td style="padding:8px 12px;font-size:14px;font-weight:800;text-align:right;color:#1d4ed8;">${fmt(somaApt)}</td></tr>`;
+
+    document.getElementById('printArea').innerHTML = `
+        <div style="font-family:'Nunito',sans-serif;max-width:560px;margin:0 auto;">
+            <div style="background:linear-gradient(135deg,#1a7bbf,#74d7ff);border-radius:14px;padding:24px;margin-bottom:18px;color:white;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;">
+                    <div>
+                        <div style="font-size:22px;font-weight:900;letter-spacing:-0.5px;">🏥 HAPVIDA</div>
+                        <div style="font-size:12px;opacity:0.85;margin-top:2px;">Cotação de Plano de Saúde</div>
+                    </div>
+                    <div style="text-align:right;font-size:11px;opacity:0.85;"><div>📅 ${hoje}</div><div>👥 ${idades.length} vida${idades.length>1?'s':''}</div></div>
+                </div>
+                <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.3);display:flex;gap:20px;flex-wrap:wrap;">
+                    <div><div style="font-size:10px;opacity:0.7;text-transform:uppercase;letter-spacing:0.5px;">Tipo</div><div style="font-size:13px;font-weight:700;">${tipo}</div></div>
+                    <div><div style="font-size:10px;opacity:0.7;text-transform:uppercase;letter-spacing:0.5px;">Plano</div><div style="font-size:13px;font-weight:700;">${plano}</div></div>
+                    <div><div style="font-size:10px;opacity:0.7;text-transform:uppercase;letter-spacing:0.5px;">Coparticipação</div><div style="font-size:13px;font-weight:700;">${copart}</div></div>
+                </div>
+            </div>
+            <div style="background:#fefce8;border:1px solid #fde047;border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#713f12;">
+                <strong>⭐ Desconto promocional:</strong> Valores com desconto válidos pelos <strong>3 primeiros meses</strong>. Após esse período aplica-se o valor normal.
+            </div>
+            ${benefHTML}
+            <div style="border:2px solid #1d4ed8;border-radius:12px;overflow:hidden;margin-top:8px;">
+                <div style="background:linear-gradient(135deg,#1d4ed8,#2563eb);padding:10px 14px;">
+                    <span style="color:white;font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;">📊 Resumo do Grupo (${idades.length} vida${idades.length>1?'s':''})</span>
+                </div>
+                <table style="width:100%;border-collapse:collapse;background:white;"><tbody>${resumo}</tbody></table>
+            </div>
+            <div style="margin-top:20px;padding-top:12px;border-top:1px solid #e5e7eb;font-size:10px;color:#9ca3af;text-align:center;">
+                Cotação informativa sujeita a confirmação — Gerada em ${hoje}
+            </div>
+        </div>`;
+
+    document.getElementById('pdfModal').classList.add('open');
+}
+
+function fecharModal() { document.getElementById('pdfModal').classList.remove('open'); }
+function imprimirPdf() { window.print(); }
+document.getElementById('pdfModal').addEventListener('click', function(e) { if (e.target === this) fecharModal(); });
+</script>
+</body>
+</html>
