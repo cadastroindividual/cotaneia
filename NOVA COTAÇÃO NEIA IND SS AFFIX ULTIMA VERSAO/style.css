@@ -1,0 +1,25 @@
+body { 
+    font-family: 'Inter', sans-serif; 
+    background-color: #f3f4f6; 
+    display: flex; 
+    flex-direction: column; 
+    min-height: 100vh; 
+}
+
+.hapvida-blue { 
+    color: #0054a6; 
+}
+
+.hapvida-bg { 
+    background-color: #0054a6; 
+}
+
+.card { 
+    background: white; 
+    border-radius: 12px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+}
+
+.content-wrap { 
+    flex: 1; 
+}
